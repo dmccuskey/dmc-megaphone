@@ -3,7 +3,7 @@
 try:
 	if not gSTARTED: print( gSTARTED )
 except:
-	MODULE = "dmc-states-mixin"
+	MODULE = "dmc-megaphone"
 	include: "../DMC-Corona-Library/snakemake/Snakefile"
 
 module_config = {
