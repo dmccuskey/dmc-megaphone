@@ -16,7 +16,7 @@ Because every part of the app can hear every message, keep it for a few well-def
 ## Features
 
 - A single object, shared by every module that requires it
-- `listen()`, `say()` and `ignore()`: listeners get the message name and your data
+- `listen()`, `say()` and `ignore()`: listeners (functions or objects) get the message name and your data
 - A file of your own names and documents your app's messages (below)
 - An object of your own, rather than Solar2D's global `Runtime`, which the app doesn't own
 - Pure Lua, no plugins needed; MIT licensed
@@ -110,7 +110,7 @@ To update, copy `dmc_corona_boot.lua` and `dmc_corona/` again from the newer ver
 
 ## Documentation
 
-`require 'dmc_corona.dmc_megaphone'` returns lua-megaphone's object, so its documentation applies as written:
+`require 'dmc_corona.dmc_megaphone'` returns lua-megaphone's object (1.3.0), the same one `lib.dmc_lua.lua_megaphone` gives, with `VERSION` added, so its documentation applies as written:
 
 - [Reference](https://github.com/dmccuskey/lua-megaphone#reference): `listen()`, `say()`, `ignore()`, and the event a listener gets
 - [In Solar2D](https://github.com/dmccuskey/lua-megaphone#in-solar2d): one megaphone per module name, and why not `Runtime`
@@ -120,16 +120,9 @@ To update, copy `dmc_corona_boot.lua` and `dmc_corona/` again from the newer ver
 
 dmc-megaphone has no settings: `dmc_corona.cfg` needs no section for it, only the `[DMC_CORONA]` section that tells the loader where the libraries are. See [dmc-corona-boot Configuration](https://github.com/dmccuskey/dmc-corona-boot/blob/master/docs/configuration.md).
 
-## Known Issues
-
-The bugs of the megaphone itself are in lua-megaphone's [Known Issues](https://github.com/dmccuskey/lua-megaphone#known-issues); the one most likely to be met: `ignore()` raises an error when nothing is listening. The old README said `listen()` and `ignore()` take an object as well as a function; they take only a function. In `dmc_megaphone.lua`:
-
-- It sets the global `_extend` (its copy of `Utils.extend()` declares the inner function without `local`).
-- Its version (`0.1.0`) isn't available to code.
-
 ## Development
 
-Only `dmc_corona/dmc_megaphone.lua` is written in this repository. It loads the DMC boot loader and returns lua-megaphone's object from `lib.dmc_lua.lua_megaphone`. Everything else is a generated copy; fix it in its own repository, then rebuild:
+Only `dmc_corona/dmc_megaphone.lua` and `tests/` are written in this repository. `dmc_megaphone.lua` loads the DMC boot loader and returns lua-megaphone's object from `lib.dmc_lua.lua_megaphone`, with `VERSION` set on it: a copy would be a second megaphone, so the shared object itself is returned. Everything else is a generated copy; fix it in its own repository, then rebuild:
 
 | file | owner |
 |---|---|
@@ -142,7 +135,13 @@ The copies are made by Snakemake from sibling checkouts of the repositories abov
 snakemake --cores 1 build_all
 ```
 
-dmc-megaphone has no tests of its own; lua-megaphone's are in its `spec/`. The Quick Start is the check that the package loads in Solar2D.
+The unit tests check the wrapper and that lua-megaphone's fixes come through it; lua-megaphone's full specs are in its `spec/`. They run under plain Lua 5.1 with dkjson, with stand-ins for the Solar2D globals the boot loader uses. From the repository's root folder:
+
+```sh
+tests/run_unit.sh
+```
+
+The Quick Start is the check that the package loads in Solar2D.
 
 ## License
 
